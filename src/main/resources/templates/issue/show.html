@@ -1,0 +1,217 @@
+{{#partial "contents"}}
+
+<main class="mdl-layout__content">
+<div class="issues-back">
+	<a href="/"
+		class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon back-btn"
+		title="go back" role="button"> <i class="material-icons"
+		role="presentation">arrow_back</i>
+	</a>
+</div>
+{{#issue}}
+<div class="issues__posts mdl-grid">
+	<div class="mdl-card mdl-shadow--4dp mdl-cell mdl-cell--12-col">
+		<div class="mdl-card__menu">
+			<a href="/issue/{{id}}/edit"
+				class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
+				<i class="material-icons">edit</i>
+			</a> 
+			<form id="issues-menu-lower-right"
+				class="mdl-button mdl-js-button mdl-button--icon"
+				action="/issue/{{id}}" method="POST">
+				<input type="hidden" name="_method" value="delete">
+				<a class="issue-delBtn material-icons">delete</a>
+			</form>
+
+		</div>
+		<div class="mdl-card__title mdl-color-text--grey-50">
+			<i class="material-icons">check_circle</i>
+			<h2 class="mdl-card__title-text">{{subject}}</h2>
+		</div>
+
+		<div class="mdl-color-text--grey-700 mdl-card__supporting-text meta">
+			<img class="minilogo" height="48" width="48"
+				src="{{writer.profile}}"
+				alt="{{writer.name}}">
+			<div style="margin-right: 20px;">
+				<div class="author-text">
+					<strong> <a href="https://github.com/javajigi"
+						class="author">{{writer.userId}}</a>
+					</strong>
+				</div>
+				<span>{{updateDate}}</span>
+			</div>
+
+			{{^closed}} <a href="/issue/{{id}}/setClose" class="mdl-button mdl-button--colored mdl-js-button"> Close
+				issue </a> 
+			{{/closed}} 
+			{{#closed}} <a href="/issue/{{id}}/setReopen" class="mdl-button mdl-button--colored mdl-js-button"> reOpen
+				issue </a>
+			 {{/closed}}
+
+
+			<div class="section-spacer"></div>
+
+			<button id="milestone-menu" class="mdl-button mdl-js-button" data-milestone-subject="{{issue.milestone.subject}}">
+				Milestone({{issue.milestone.subject}})</button>
+			<!-- milestone list -->
+
+			<ul
+				class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
+				for="milestone-menu" id="milestoneList">
+				{{#mileStones}}
+				<!-- <li class="mdl-menu__item mdl-button--accent"><a
+					href="/issue/{{issue.id}}/setMilestone/{{id}}">{{subject}}</a></li> -->
+					<li class="mdl-menu__item mdl-button--accent milestoneList" 
+					data-issue-id="{{issue.id}}"
+					 data-milestone-id="{{id}}"
+					  data-selected-milestone="{{issue.milestone.id}}">{{subject}}</li>
+				{{/mileStones}}
+			</ul>
+
+			<button id="label-menu" class="mdl-button mdl-js-button">
+				Label</button>
+			<!-- label list -->
+			<ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
+				for="label-menu" id="labelList">
+				{{#labelList}}
+				<li class="mdl-menu__item" 
+				data-issue-id="{{issue.id}}" 
+				data-label-id="{{id}}" style="color: #{{color}}">
+				{{name}}
+					<!-- <a href="/issue/{{issue.id}}/setLabel/{{id}}">{{name}}</a> -->
+				</li>
+				{{/labelList}}
+			</ul>
+
+
+			<button id="assignee-menu" class="mdl-button mdl-js-button">
+				Assignee</button>
+			<!-- label list -->
+			<ul
+				class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
+				for="assignee-menu">
+				{{#users}}
+				<li class="assignSelect mdl-menu__item" data-user-id="{{userId}}" data-issue-id={{issue.id}}>{{name}}</li>
+				{{/users}}
+			</ul>
+		</div>
+		<pre class="mdl-color-text--grey-700 mdl-card__supporting-text">{{contents}}</pre>
+		
+		<div class="label-tag">
+			<span class="mdl-chip">
+	    		<span class="mdl-chip__text">Label</span>
+			</span>
+						
+
+			{{#issue.labels}}
+			<span class="mdl-chip mdl-chip--deletable" data-issue-id="{{issue.id}}"data-label-id="{{id}}">
+	    		<span class="mdl-chip__text">{{name}}</span>
+	    		<button type="button" class="label-tag-deleBtn mdl-chip__action"><i class="material-icons">cancel</i></button>
+			</span>
+			{{/issue.labels}}
+		</div>
+		
+		<div class="assignee-tag">
+			<span class="mdl-chip">
+	    		<span class="mdl-chip__text">Assignee</span>
+			</span>
+			{{#issue.assignee}}
+			<span class="mdl-chip mdl-chip--deletable" data-issue-id="{{issue.id}}" data-assignee-id="{{id}}">
+	    		<span class="mdl-chip__text">{{name}}</span>
+	    		<button type="button" class="assignee-tag-deleBtn mdl-chip__action"><i class="material-icons">cancel</i></button>
+			</span>
+			{{/issue.assignee}}
+		</div>
+		<div class="commentSpace mdl-color-text--primary-contrast mdl-card__supporting-text comments">
+		{{#comments}}
+		<div class="temptemp"></div>
+			<!-- comments start -->
+			<div class="comment mdl-color-text--grey-700">
+				<header class="comment__header">
+					<img class="comment__avatar2" height="48" width="48"
+						src="{{writer.profile}}"
+						alt="{{writer.name}}">
+					<div class="comment__author">
+						<strong> <a class="comment_writer_userId">{{writer.userId}}</a> 
+								<pre class="comment_contents">{{contents}}</pre>
+								<span>on    {{formattedCreationDate}}</span>
+						</strong>
+					</div>
+					{{#files}}
+					<div class="comment__file" data-file-id="{{id}}" data-file-name="{{fileName}}">
+						<strong>
+								<a href="{{downloadUrl}}">{{fileName}}</a>
+						</strong>
+					</div>
+					{{/files}}
+					<a class="modifyCommentBtn mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect" data-issue-id="{{issue.id}}"  data-comment-id="{{id}}">
+						<i class="material-icons">edit</i>
+					</a>
+					<a class="deleteCommentBtn mdl-button mdl-js-button mdl-button--icon"  data-issue-id="{{issue.id}}" data-comment-id="{{id}}">
+						<i class="material-icons" >delete</i>
+					</a>
+				</header>
+				<hr>
+			</div>		
+			{{/comments}}
+
+			<!-- comments end -->
+		</div>
+		<form action="/issue/{{id}}/uploadFile" id="uploadFileForm" enctype="multipart/form-data"
+			method="POST">
+			<div style="margin: 10px;">
+				<input type="file" name="file" id="file" />
+				<button class="mdl-button uploadFileBtn" type="submit">upload file</button>
+			</div>
+			<div class="uploadFileList">
+			</div>
+		</form>
+		<div
+			class="mdl-color-text--primary-contrast mdl-card__supporting-text new-comment" id="{{id}}">
+			<form class="addComment" action="/api/issue/{{issue.id}}/comment/create" >
+				<div
+					class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+					<textarea rows=5 class="mdl-textfield__input" id="contents"
+						name="contents" data-issue-id="{{issue.id}}" data-comment-id="{{id}}"></textarea>
+					<label for="comment" class="mdl-textfield__label">Leave a
+						comment</label>
+				</div>
+				<button type="submit"
+					class="addCommentBtn mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon">
+					<i class="material-icons" role="presentation">check</i> <span
+						class="visuallyhidden">add comment</span>
+				</button>
+			</form>
+		</div>
+	</div>
+</div>
+	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+	<script src="https://cdn.rawgit.com/showdownjs/showdown/1.6.4/dist/showdown.min.js"></script>
+	<script src="/webjars/handlebars/4.0.5/handlebars.min.js"></script>
+	<script src="/js/Comment.js"></script>
+	<script src="/js/issue.js"></script>
+	<script type="text/template" id="uploadedFileTemplate">
+		<div class="fileList" data-id="{0}">
+			<span>{1}</span>
+			<a class="deleteFileBtn mdl-button mdl-js-button mdl-button--icon">
+				<i class="material-icons" >delete</i>
+			</a>
+		</div>
+	</script>
+	<script type="text/template" id="labelTagTemplate">
+		<span class="mdl-chip mdl-chip--deletable" data-issue-id="{2}" data-label-id="{1}">
+    		<span class="mdl-chip__text">{0}</span>
+    		<button type="button" class="label-tag-deleBtn mdl-chip__action"><i class="material-icons">cancel</i></button>
+		</span>
+	</script>
+	<script type="text/template" id="AssigneeTagTemplate">
+		<span class="mdl-chip mdl-chip--deletable" data-issue-id="{2}" data-assignee-id="{1}">
+    		<span class="mdl-chip__text">{0}</span>
+    		<button type="button" class="assignee-tag-deleBtn mdl-chip__action"><i class="material-icons">cancel</i></button>
+		</span>
+	</script>
+	<script type="text/javascript" id="commentTemplate">{{precompile "/precomfile/commentAddTemplate"}}</script>
+	<script type="text/javascript" id="commentModifyTemplate">{{precompile "/precomfile/commentModifyTemplate"}}</script>
+	{{/issue}}
+{{/partial}} {{> template}} 
